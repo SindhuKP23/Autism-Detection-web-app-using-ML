@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASD Detection Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+       body { 
+    background: linear-gradient(rgba(18, 18, 24, 0.92), rgba(18, 18, 24, 0.92)), 
+                url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Autism_puzzle_heart.svg') no-repeat center center fixed; 
+    background-size: contain;
+    background-color: #121212;
+    color: #fff; 
+    font-family: sans-serif; 
+    padding: 40px; 
+}
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #3d3d3d;
+        }
+        .custom-header {
+            background: linear-gradient(135deg, #2c1a4d 0%, #120a24 100%);
+            border-bottom: 2px solid #d1c4e9;
+        }
+        .text-lavender {
+            color: #d1c4e9 !important; /* Made significantly lighter for readability */
+        }
+        .text-accent {
+            color: #e040fb !important; /* High contrast neon purple */
+        }
+        .text-muted-custom {
+            color: #b0bec5 !important; /* Replaced dark muted text with a light slate grey */
+        }
+        .form-label {
+            color: #ffffff !important; /* Crisp white for vital inputs */
+            font-weight: 600;
+        }
+        .form-control, .form-select {
+            background-color: #242424;
+            border: 1px solid #555555;
+            color: #ffffff !important;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a;
+            border-color: #e040fb;
+            color: #ffffff;
+            box-shadow: 0 0 0 0.25rem rgba(224, 64, 251, 0.25);
+        }
+        /* Custom styles to force placeholder text visibility */
+        .form-control::placeholder {
+            color: #888888 !important;
+            opacity: 1;
+        }
+        .form-check-input {
+            background-color: #242424;
+            border: 2px solid #888888;
+        }
+        .form-check-input:checked {
+            background-color: #e040fb;
+            border-color: #e040fb;
+        }
+        .btn-lavender {
+            background-color: #d1c4e9;
+            color: #121212;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .btn-lavender:hover {
+            background-color: #e040fb;
+            color: #ffffff;
+        }
+        .btn-outline-lavender {
+            border-color: #d1c4e9;
+            color: #d1c4e9;
+            font-weight: 600;
+        }
+        .btn-outline-lavender:hover {
+            background-color: #d1c4e9;
+            color: #121212;
+        }
+        hr {
+            border-top: 1px solid #444444;
+        }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    
+                    <div class="custom-header p-5 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold text-lavender mb-1">Autism Spectrum Disorder (ASD) Portal</h2>
+                            <p class="mb-0 text-muted-custom">Welcome back, <span class="text-accent fw-bold">{{ username }}</span></p>
+                        </div>
+                        <a href="/logout" class="btn btn-sm btn-outline-lavender px-3 rounded-pill">Logout</a>
+                    </div>
+
+                    <div class="card-body p-5">
+                        <form action="/predict" method="POST">
+                            
+                            <h4 class="text-lavender mb-4 fw-semibold">Demographic & Medical History</h4>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4">
+                                    <label class="form-label">Age (years)</label>
+                                    <input type="number" name="age" class="form-control form-control-lg rounded-3" min="1" max="80" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Gender</label>
+                                    <select name="gender" class="form-select form-select-lg rounded-3" required>
+                                        <option value="1">Male</option>
+                                        <option value="0">Female</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Born with Jaundice?</label>
+                                    <select name="jaundice" class="form-select form-select-lg rounded-3" required>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h4 class="text-lavender mb-4 fw-semibold">Behavioral Screening (AQ-10)</h4>
+                            
+                            {% set questions = [
+                                "Does the individual notice small changes in a situation or a person's appearance easily?",
+                                "Does the individual focus more on the whole picture rather than small details?",
+                                "Is it easy for the individual to do more than one thing at once?",
+                                "If there is an interruption, can they switch back to what they were doing easily?",
+                                "Does the individual find it easy to 'read between the lines' when someone is talking?",
+                                "Does the individual know how to tell if someone listening to them is getting bored?",
+                                "When reading a story, can they easily imagine what the characters might look like?",
+                                "Does the individual find it difficult to understand people's intentions or expressions?",
+                                "Does the individual find it easy to figure out what someone is thinking or feeling?",
+                                "Does the individual frequently struggle with social transitions or making new friends?"
+                            ] %}
+
+                            {% for q in questions %}
+                            <div class="mb-4 p-4 rounded-3" style="background-color: #222222; border: 1px solid #2d2d2d;">
+                                <label class="form-label d-block mb-3 lh-base"><span class="text-accent fw-bold">{{ loop.index }}.</span> {{ q }}</label>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q{{ loop.index }}" value="1" id="q{{ loop.index }}y" required>
+                                        <label class="form-check-label text-white fw-medium" for="q{{ loop.index }}y">Yes / Frequently</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q{{ loop.index }}" value="0" id="q{{ loop.index }}n">
+                                        <label class="form-check-label text-white fw-medium" for="q{{ loop.index }}n">No / Rarely</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn btn-lavender btn-lg w-100 py-3 rounded-3 shadow">Generate Screening Result</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
